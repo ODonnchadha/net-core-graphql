@@ -9,6 +9,7 @@ using Orders.Mutations;
 using Orders.Queries;
 using Orders.Schemas;
 using Orders.Services;
+using Orders.Subscriptions;
 using Orders.Types;
 
 namespace Server
@@ -19,13 +20,17 @@ namespace Server
         {
             services.AddSingleton<ICustomerService, CustomerService>();
             services.AddSingleton<IOrderService, OrderService>();
+            services.AddSingleton<IOrderEventService, OrderEventService>();
 
             services.AddSingleton<CustomerType>();
             services.AddSingleton<OrderCreateType>();
             services.AddSingleton<OrderStatusType>();
             services.AddSingleton<OrderType>();
+            services.AddSingleton<OrderEventType>();
 
             services.AddSingleton<OrderMutation>();
+
+            services.AddSingleton<OrderSubscription>();
 
             services.AddSingleton<OrderSchema>();
             services.AddSingleton<OrderQuery>();

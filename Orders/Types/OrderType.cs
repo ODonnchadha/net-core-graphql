@@ -14,6 +14,7 @@ namespace Orders.Types
             Field<CustomerType>("customer", 
                 resolve: context => customers.GetCustomerByIdAsync(context.Source.CustomerId));
             Field(o => o.CreatedDate);
+            Field<OrderStatusType>("status", resolve: context => context.Source.Status);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Orders.Interfaces;
+﻿using Orders.Events;
+using Orders.Interfaces;
 using Orders.Models;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,9 @@ namespace Orders.Services
     public class OrderService : IOrderService
     {
         private IList<Order> orders;
+        private readonly IOrderEventService events;
 
-        public OrderService()
+        public OrderService(IOrderEventService orderEventService)
         {
             this.orders = new List<Order>
             {
@@ -21,12 +23,17 @@ namespace Orders.Services
                 new Order("3000", "500 Stickers", DateTime.Now.AddHours(3), 3, "825d7dc8-e8f3-418a-b2c9-9f3bf2ecf3da"),
                 new Order("4000", "10 Posters", DateTime.Now.AddDays(-3), 4, "954a7327-4890-4e1e-9062-c07dcc5d4c14"),
             };
+
+            this.events = orderEventService;
         }
 
         public Task<Order> CreateAsync(Order order)
         {
             orders.Add(order);
 
+            var orderEvent = new OrderEvent(order.Id, order.Name, OrderStatus.CREATED, DateTime.Now);
+            events.AddEvent(orderEvent);         
+            
             return Task.FromResult(order);
         }
 
@@ -38,6 +45,9 @@ namespace Orders.Services
         {
             var order = GetById(orderId);
             order.Init();
+
+            var orderEvent = new OrderEvent(order.Id, order.Name, OrderStatus.PROCESSING, DateTime.Now);
+            events.AddEvent(orderEvent);
 
             return Task.FromResult(order);
         }
